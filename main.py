@@ -94,8 +94,6 @@ all_points.plot(ax=ax, column='race', legend=True, alpha=0.6, markersize=8)
 # Add a basemap
 ctx.add_basemap(ax, crs=galveston_tracts.crs.to_string(), source=ctx.providers.OpenStreetMap.Mapnik)
 ax.set_title('Dot Density Map of Race/Ethnicity in Galveston County')
-plt.show()
-logging.info('Plot generated successfully.')
 
 # Generate a timestamp
 timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
@@ -104,6 +102,8 @@ timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
 plt.savefig(f'output/dot_density_map_{timestamp}.png')
 logging.info(f'Plot saved as dot_density_map_{timestamp}.png in the output folder.')
 
+plt.show()
+logging.info('Plot generated successfully.')
 
 # Initialize a list to hold the summary data
 summary_data = []
