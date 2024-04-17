@@ -53,10 +53,10 @@ def generate_random_points(poly, num_points):
     
 # Function to apply generate_points to each row of the DataFrame
 def apply_generate_points(row, column_name):
-    num_points = int(row[column_name])  # Convert to integer
+    num_points = int(row[column_name])  # Convert to integer if not already
     return generate_random_points(row['geometry'], num_points)
 
-# Generate points for different races
+# Generate points for different races using the correct column names
 race_columns = ['race_hispanic', 'race_white', 'race_black', 'race_asian']
 for race in race_columns:
     galveston_tracts[f"{race}_points"] = galveston_tracts.apply(apply_generate_points, column_name=race, axis=1)
@@ -88,10 +88,40 @@ logging.info('All points combined into a single GeoDataFrame with consistent CRS
 # Plotting
 fig, ax = plt.subplots(figsize=(10, 10))
 galveston_tracts.plot(ax=ax, edgecolor='black', facecolor='none')
-all_points.plot(ax=ax, column='race', legend=True, alpha=0.8, markersize=10)
+all_points.plot(ax=ax, column='race', legend=True, alpha=0.6, markersize=8)
 
 # Add a basemap
 ctx.add_basemap(ax, crs=galveston_tracts.crs.to_string(), source=ctx.providers.OpenStreetMap.Mapnik)
 ax.set_title('Dot Density Map of Race/Ethnicity in Galveston County')
 plt.show()
 logging.info('Plot generated successfully.')
+
+# Initialize a list to hold the summary data
+summary_data = []
+
+# Iterate over each row in the galveston_tracts GeoDataFrame
+for index, row in galveston_tracts.iterrows():
+    # Extract the census tract ID
+    census_tract_id = row['census_tract_id']
+    
+    # Count the number of points for each race
+    # Use .geoms on each MultiPoint object to get an iterable of Point objects, then use len() to count them
+    hispanic_points_count = len(row['race_hispanic_points'].geoms) if row['race_hispanic_points'] else 0
+    white_points_count = len(row['race_white_points'].geoms) if row['race_white_points'] else 0
+    black_points_count = len(row['race_black_points'].geoms) if row['race_black_points'] else 0
+    asian_points_count = len(row['race_asian_points'].geoms) if row['race_asian_points'] else 0
+    
+    # Append the counts to the summary data list
+    summary_data.append({
+        'Census Tract ID': census_tract_id,
+        'Hispanic': hispanic_points_count,
+        'White': white_points_count,
+        'Black': black_points_count,
+        'Asian': asian_points_count
+    })
+
+# Convert the summary data into a DataFrame
+summary_df = pd.DataFrame(summary_data)
+
+# Print the DataFrame in a well-formatted table
+print(summary_df.to_string(index=False))
