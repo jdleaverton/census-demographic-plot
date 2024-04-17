@@ -8,6 +8,7 @@ import contextily as ctx  # Importing contextily for adding basemaps to plots
 import pandas as pd  # Importing pandas for data manipulation
 import logging  # Importing logging to log messages
 import random # Importing random to generate random numbers
+import datetime # Importing datetime to generate a timestamp
 
 # Setting up basic configuration for logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -95,6 +96,14 @@ ctx.add_basemap(ax, crs=galveston_tracts.crs.to_string(), source=ctx.providers.O
 ax.set_title('Dot Density Map of Race/Ethnicity in Galveston County')
 plt.show()
 logging.info('Plot generated successfully.')
+
+# Generate a timestamp
+timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
+# Save the plot in the 'output' folder with the timestamp
+plt.savefig(f'output/dot_density_map_{timestamp}.png')
+logging.info(f'Plot saved as dot_density_map_{timestamp}.png in the output folder.')
+
 
 # Initialize a list to hold the summary data
 summary_data = []
